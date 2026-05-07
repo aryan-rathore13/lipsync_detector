@@ -300,6 +300,7 @@ def evaluate_manifest(
         "metrics_at_operating_threshold": metrics,
         "best_f1_threshold": best_f1,
         "best_balanced_accuracy_threshold": best_balanced_accuracy,
+        "threshold_sweep": sweep_rows,
         "triggered_by_breakdown": triggered_breakdown,
         "group_summaries": group_summaries,
         "failures": failures,

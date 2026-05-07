@@ -193,6 +193,15 @@ Reusable templates are included in [data/manifests/templates](data/manifests/tem
 
 This is the right foundation for adding held-out validation splits, multilingual slices, and later threshold calibration.
 
+Recommended workflow:
+
+1. Build a validation manifest, for example `data/manifests/val_hindi.csv`.
+2. Run `python scripts/evaluate.py data/manifests/val_hindi.csv`.
+3. Use the generated run directory with `python scripts/calibrate_threshold.py results/eval/<run_id> --metric f1 --write-config config.val_tuned.yaml`.
+4. Evaluate the tuned config on a separate held-out test manifest.
+
+This keeps threshold selection honest: tune on `val`, report on `test`.
+
 ## Suggested Next Improvements
 
 If your goal is a stronger AI/ML portfolio project, these are the highest-value upgrades:
