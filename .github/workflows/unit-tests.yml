@@ -19,6 +19,6 @@ jobs:
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install numpy librosa PyYAML
+          pip install numpy librosa PyYAML matplotlib
       - name: Run unit tests
         run: python -m unittest discover -s tests -p 'test_*.py'

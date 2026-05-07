@@ -26,7 +26,7 @@ What is still incomplete:
 
 - Multilingual robustness has not been benchmarked systematically.
 - The biomechanical layer is currently a heuristic fallback, not a fully integrated external BioLip model.
-- There is no formal evaluation suite or published benchmark table yet.
+- A formal evaluation harness now exists, but it still needs real benchmark manifests and published result tables.
 - Multi-face handling is still coarse.
 - The MediaPipe Tasks face-landmarker path can be unstable in some headless macOS environments, so local desktop execution is the main supported path today.
 
@@ -156,12 +156,49 @@ make test
 
 GitHub Actions is configured to run these tests automatically on push and pull request.
 
+## Evaluation Harness
+
+The repo now includes a manifest-driven evaluation harness in [scripts/evaluate.py](scripts/evaluate.py).
+
+Manifest format:
+
+```csv
+sample_id,video_path,label,split,language,source,notes
+clip_001,/abs/path/video1.mp4,REAL,test,english,celebdf,clean sample
+clip_002,/abs/path/video2.mp4,FAKE,test,hindi,custom,wav2lip variant
+```
+
+Minimum required columns:
+
+- `video_path`
+- `label`
+
+Run it with:
+
+```bash
+python scripts/evaluate.py data/manifests/sample_eval_manifest.csv
+```
+
+Artifacts are written under `results/eval/<timestamp>/`:
+
+- `predictions.jsonl`: one row per sample with raw detector outputs
+- `predictions.csv`: spreadsheet-friendly export
+- `threshold_sweep.csv`: metrics across thresholds from 0.0 to 1.0
+- `summary.json`: aggregate metrics, ROC-AUC, best F1 threshold, grouped summaries
+- `config_snapshot.json`: exact config used for the run
+- `report.md`: markdown report you can attach to the repo or a benchmark folder
+- `plots/`: threshold sweep, confidence distribution, and decision breakdown charts
+
+Reusable templates are included in [data/manifests/templates](data/manifests/templates), and manifest conventions are documented in [data/manifests/README.md](data/manifests/README.md).
+
+This is the right foundation for adding held-out validation splits, multilingual slices, and later threshold calibration.
+
 ## Suggested Next Improvements
 
 If your goal is a stronger AI/ML portfolio project, these are the highest-value upgrades:
 
-1. Build a real evaluation harness.
-Create a reproducible benchmark script with per-dataset metrics, confusion matrices, ROC-AUC, and threshold sweeps. This is the single biggest credibility upgrade.
+1. Populate the evaluation harness with real benchmark manifests.
+Use the current harness against real held-out slices, multilingual subsets, and architecture ablations. The credibility gain now comes from the data and reporting discipline, not from more harness code.
 
 2. Add multilingual validation.
 Test on Hindi, Bengali, Tamil, and mixed-code speech. Right now the repo can claim “not yet fully validated outside English,” not “language agnostic.”

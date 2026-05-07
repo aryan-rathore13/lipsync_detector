@@ -1,0 +1,5 @@
+sample_id,video_path,label,split,language,source,notes
+test_real,test_real.avi,REAL,test,english,local_smoke,Known real sample
+test_fake_shifted,test_fake_shifted.avi,FAKE,test,english,local_smoke,Audio shifted
+test_fake_frozen,test_fake_frozen_lips.avi,FAKE,test,english,local_smoke,Lips frozen
+test_fake_muted,test_fake_muted_lips.avi,FAKE,test,english,local_smoke,Lips move without audio

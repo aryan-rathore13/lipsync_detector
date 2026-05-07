@@ -17,6 +17,8 @@ Returns JSON:
 """
 
 import argparse
+import contextlib
+import io
 import json
 import os
 import time
@@ -31,42 +33,60 @@ def load_config(path: str) -> dict:
         return yaml.safe_load(f)
 
 
-def detect(video_path: str, cfg: dict) -> dict:
+def _run_detection_pipeline(video_path: str, cfg: dict, verbose: bool) -> dict:
     t0 = time.time()
 
-    print(f"[1/5] Preprocessing: {video_path}")
+    if verbose:
+        print(f"[1/5] Preprocessing: {video_path}")
     data = preprocessor.preprocess(video_path, cfg)
-    print(f"      → {len(data['lip_frames'])} frames, {len(data['audio_wav'])/data['sample_rate']:.1f}s audio")
+    if verbose:
+        print(f"      → {len(data['lip_frames'])} frames, {len(data['audio_wav'])/data['sample_rate']:.1f}s audio")
 
-    print("[2/5] Boolean gate check")
+    if verbose:
+        print("[2/5] Boolean gate check")
     gate = boolean_gate.run(data, cfg)
-    print(f"      → mismatch_ratio={gate['mismatch_ratio']:.3f}  triggered={gate['triggered']}")
+    if verbose:
+        print(f"      → mismatch_ratio={gate['mismatch_ratio']:.3f}  triggered={gate['triggered']}")
 
     if gate["triggered"]:
         result = ensemble.fuse(gate, {}, {}, {}, cfg)
         result["processing_time_s"] = round(time.time() - t0, 2)
         return result
 
-    print("[3/5] SyncNet temporal sync scoring")
+    if verbose:
+        print("[3/5] SyncNet temporal sync scoring")
     sync = syncnet_scorer.run(data, cfg, video_path=video_path)
-    if sync.get("skipped"):
-        print(f"      → SKIPPED: {sync.get('reason')}")
-    else:
-        print(f"      → LSE-C={sync['lse_c']:.2f}  LSE-D={sync['lse_d']:.2f}  "
-              f"offset={sync['offset_frames']} frames  "
-              f"fake_score={sync['syncnet_fake_score']:.3f}")
+    if verbose:
+        if sync.get("skipped"):
+            print(f"      → SKIPPED: {sync.get('reason')}")
+        else:
+            print(f"      → LSE-C={sync['lse_c']:.2f}  LSE-D={sync['lse_d']:.2f}  "
+                  f"offset={sync['offset_frames']} frames  "
+                  f"fake_score={sync['syncnet_fake_score']:.3f}")
 
-    print("[4/5] LIPINC-V2 / LipForensics spatiotemporal scoring")
+    if verbose:
+        print("[4/5] LIPINC-V2 / LipForensics spatiotemporal scoring")
     lipinc = lipinc_scorer.run(data, cfg)
-    print(f"      → method={lipinc['method']}  fake_score={lipinc['lipinc_fake_score']:.3f}")
+    if verbose:
+        print(f"      → method={lipinc['method']}  fake_score={lipinc['lipinc_fake_score']:.3f}")
 
-    print("[5/5] BioLip biomechanical scoring")
+    if verbose:
+        print("[5/5] BioLip biomechanical scoring")
     biolip = biolip_scorer.run(data, cfg)
-    print(f"      → method={biolip['method']}  fake_score={biolip['biolip_fake_score']:.3f}")
+    if verbose:
+        print(f"      → method={biolip['method']}  fake_score={biolip['biolip_fake_score']:.3f}")
 
     result = ensemble.fuse(gate, sync, lipinc, biolip, cfg)
     result["processing_time_s"] = round(time.time() - t0, 2)
     return result
+
+
+def detect(video_path: str, cfg: dict, verbose: bool = True) -> dict:
+    if verbose:
+        return _run_detection_pipeline(video_path, cfg, verbose=True)
+
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        return _run_detection_pipeline(video_path, cfg, verbose=False)
 
 
 def main():

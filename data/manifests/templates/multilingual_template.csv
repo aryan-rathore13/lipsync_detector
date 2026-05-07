@@ -1,0 +1,5 @@
+sample_id,video_path,label,split,language,source,notes
+hindi_real_001,/abs/path/to/hindi_real_001.mp4,REAL,val,hindi,custom,clean spoken sample
+hindi_fake_001,/abs/path/to/hindi_fake_001.mp4,FAKE,val,hindi,custom,wav2lip generated
+tamil_real_001,/abs/path/to/tamil_real_001.mp4,REAL,test,tamil,custom,held-out authentic sample
+tamil_fake_001,/abs/path/to/tamil_fake_001.mp4,FAKE,test,tamil,custom,held-out fake sample

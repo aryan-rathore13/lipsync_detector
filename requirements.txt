@@ -1,6 +1,7 @@
 torch
 torchvision
 torchaudio
+matplotlib
 mediapipe
 librosa
 opencv-python

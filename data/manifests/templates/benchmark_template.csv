@@ -1,0 +1,3 @@
+sample_id,video_path,label,split,language,source,notes
+real_001,/abs/path/to/real_clip_001.mp4,REAL,test,english,celebdf,baseline authentic sample
+fake_001,/abs/path/to/fake_clip_001.mp4,FAKE,test,english,wav2lip,temporal desync candidate
