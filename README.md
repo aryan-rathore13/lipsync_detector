@@ -112,6 +112,34 @@ source .venv/bin/activate
 python detector.py path/to/video.mp4
 ```
 
+For system integration, you can also run the detector as an HTTP service:
+
+```bash
+source .venv/bin/activate
+python scripts/run_api.py --host 127.0.0.1 --port 8000
+```
+
+Endpoints:
+
+- `GET /health`
+- `POST /detect/path`
+- `POST /detect/upload`
+
+Example path request:
+
+```bash
+curl -X POST http://127.0.0.1:8000/detect/path \
+  -H "Content-Type: application/json" \
+  -d '{"video_path": "/absolute/path/to/video.mp4"}'
+```
+
+Example upload request:
+
+```bash
+curl -X POST http://127.0.0.1:8000/detect/upload \
+  -F "file=@/absolute/path/to/video.mp4"
+```
+
 Example output:
 
 ```json

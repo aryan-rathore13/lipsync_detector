@@ -1,6 +1,6 @@
 PYTHON ?= ./.venv/bin/python
 
-.PHONY: test eval report calibrate setup-third-party download-models
+.PHONY: test eval report calibrate serve-api setup-third-party download-models
 
 test:
 	$(PYTHON) -m unittest discover -s tests -p 'test_*.py'
@@ -13,6 +13,9 @@ report:
 
 calibrate:
 	$(PYTHON) scripts/calibrate_threshold.py $(RUN_DIR) --metric $(or $(METRIC),f1) $(if $(OUT_CONFIG),--write-config $(OUT_CONFIG),)
+
+serve-api:
+	$(PYTHON) scripts/run_api.py --host 127.0.0.1 --port 8000
 
 setup-third-party:
 	bash scripts/setup_third_party.sh
