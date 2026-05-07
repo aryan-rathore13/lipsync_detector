@@ -1,0 +1,11 @@
+torch
+torchvision
+torchaudio
+mediapipe
+librosa
+opencv-python
+ffmpeg-python
+numpy
+scipy
+PyYAML
+tqdm

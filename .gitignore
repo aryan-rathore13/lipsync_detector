@@ -1,0 +1,22 @@
+.DS_Store
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# Local media and artifacts
+example*.mp4
+*.log
+
+# Downloaded model assets
+models/**/*.task
+models/**/*.model
+models/**/*.pth
+
+# Third-party repos should be fetched locally, not committed into this repo
+/syncnet_python/
+/lipforensics/
+/biolip/

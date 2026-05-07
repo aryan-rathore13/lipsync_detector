@@ -1,0 +1,24 @@
+thresholds:
+  boolean_gate_mismatch_ratio: 0.30   # fraction of 1s windows with mismatch to trigger instant FAKE
+  rms_energy: 0.02                    # RMS amplitude below this = audio silent
+  mar_variance: 0.0005                # MAR variance below this over 1s window = lips stationary
+  final_verdict: 0.50                 # ensemble score >= this → FAKE
+  syncnet_veto: 0.50                  # LSE-C below this → hard veto (only extreme desync; 2.5 was too high for non-BBC content)
+
+weights:
+  syncnet: 0.25   # reduced: SyncNet trained on BBC English, underperforms on Indian/non-BBC content
+  lipinc:  0.50   # primary signal: LipForensics trained on diverse FaceForensics++ data
+  biolip:  0.25   # physics layer: language-agnostic tiebreaker
+
+video:
+  target_fps: 25
+  lip_crop_size: 96                   # pixels, square
+
+audio:
+  sample_rate: 16000                  # Hz, mono
+
+models:
+  face_landmarker: models/face_landmarker.task
+  syncnet_weights: models/syncnet/syncnet_v2.model
+  lipinc_weights:  models/lipinc_v2/lipforensics_ff.pth
+  biolip_weights:  models/biolip/biolip.pth
